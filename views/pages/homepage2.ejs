@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title></title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+
+<body style="padding: 0cm;">
+
+  <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+    <%- include ../parts/nav.ejs %>
+
+    <div class="page-wrapper">
+      <!-- ============================================================== -->
+      <!-- Bread crumb and right sidebar toggle -->
+      <!-- ============================================================== -->
+      <div class="page-breadcrumb">
+        <div class="row">
+          <div class="col-7 align-self-center">
+            <h2 class="page-title text-truncate text-dark font-weight-medium mb-1">Home</h2>
+            <div class="d-flex align-items-center">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb m-0 p-0">
+                  <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+                  <li class="breadcrumb-item text-muted active" aria-current="page"></li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+          <div class="col-5 align-self-center">
+            <div class="customize-input float-right">
+              <select
+                class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
+                <option selected>Aug 19</option>
+                <option value="1">July 19</option>
+                <option value="2">Jun 19</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Bread crumb and right sidebar toggle -->
+      <!-- ============================================================== -->
+      <!-- ============================================================== -->
+      <!-- Container fluid  -->
+      <!-- ============================================================== -->
+      <div class="container-fluid">
+        <!-- ============================================================== -->
+        <!-- Start Page Content -->
+        <!-- ============================================================== -->
+        <div class="row">
+          <div class="col-12">
+
+
+            <h3 style="color: red;" id="warningStore"></h3>
+            <br>
+            <table id="orderTable">
+            </table>
+            <br><br>
+            <div id="account"></div>
+            <div id="words"></div>
+            <div id="sID"></div>
+            <div id="resData2"></div>
+          </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End PAge Content -->
+        <!-- multi-column ordering -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-body">
+                <h4 class="card-title">Orders</h4>
+                
+                <div class="table-responsive">
+                  <table id="multi_col_order" class="table table-striped table-bordered display no-wrap"
+                    style="width:100%">
+                    <thead>
+                      <tr>
+                        <th>orderID</th>
+                        <th>venderID</th>
+                        <th>userID</th>
+                        <th>price</th>
+                        <th>amount</th>
+                        <th>discount(%off)</th>
+                        <th>total</th>
+                        <th>tradeTime</th>
+                      </tr>
+                    </thead>
+                    <tbody id="order_table">
+                      
+                      
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- ============================================================== -->
+        <!-- End Container fluid  -->
+
+
+
+      </div>
+      <!--This page plugins -->
+    <script src="/javascripts/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+
+</body>
+
+</html>
+<script>
+  if (document.cookie) {
+    var path = "http://127.0.0.1:3000/homepage";
+    var sJson = {
+      "uID": getCookie('uID')
+    }
+    console.log(sJson)
+    $.ajax({
+      url: path,
+      data: sJson,
+      type: "POST",
+      dataType: 'json',
+      success: function (msg) {
+        console.log(msg);
+        //$("#resData2").text(msg.msg);
+        if (msg.code == 2001) {
+          storeData = ""
+          for (let i = 0; i < msg.storedata.length; i++) {
+            storeData += msg.storedata[i].pID + "is lacking<br>"
+          }
+          document.getElementById('warningStore').innerHTML = storeData
+          //document.getElementById('getCook').innerHTML = msg.data.username + " 您好";
+          let orderInfo =""
+          for (let i = 0; i < msg.data.length; i++) {
+            //show table
+            if (msg.data[i].tradeMonth < 10) {
+              msg.data[i].tradeMonth = "0" + msg.data[i].tradeMonth
+            }
+            if (msg.data[i].tradeDay < 10) {
+              msg.data[i].tradeDay = "0" + msg.data[i].tradeDay
+            }
+            let tradeTime = msg.data[i].tradeYear + "-" + msg.data[i].tradeMonth + "-" + msg
+              .data[i].tradeDay
+            orderInfo += "<tr id=" + msg.data[i].oID + "><td>" + msg.data[i].oID +
+              "</td><td >" + msg.data[i].vID +
+              "</td><td >" + msg.data[i].uID +
+              "</td><td id='price" + i + "'  onkeyup='calculate(" + i + ")'>" +
+              msg.data[i].price +
+              "</td><td id='amount" + i + "'  onkeyup='calculate(" + i + ")'>" +
+              msg.data[i].amount +
+              "</td><td id='discount" + i + "'  onkeyup='calculate(" + i + ")'>" +
+              msg.data[i].discount + "</td><td id='total" + i + "'>" +
+              msg.data[i].total +
+              "</td><td ><input id=time type='date' readonly value=" + tradeTime +
+              "></td></tr>"
+
+          }
+          document.getElementById('order_table').innerHTML = orderInfo
+          
+          //document.getElementById('multi_col_order').DataTable();
+        } else {
+          //document.getElementById('getCook').innerHTML = " 您好";
+          $("#resData2").text(msg);
+        }
+      },
+      err: function (msg) {
+        console.log("err");
+        $("#resData2").text(msg.resData);
+      }
+    });
+  } else {
+    document.getElementById('getCook').innerHTML = '請先登入';
+    window.location.href = "/"
+    //console.log('false');
+  }
+  $(document).ready( function () {
+    $('#multi_col_order').DataTable();
+} );
+</script>
+    

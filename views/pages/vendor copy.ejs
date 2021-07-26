@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body style="padding: 0cm;">
+
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <%- include ../parts/nav.ejs %>
+
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-7 align-self-center">
+                        <h2 class="page-title text-truncate text-dark font-weight-medium mb-1"><%= title %></h2>
+                        <div class="d-flex align-items-center">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+                                    <li class="breadcrumb-item text-muted active" aria-current="page">Library</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-center">
+                        <div class="customize-input float-right">
+                            <select
+                                class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
+                                <option selected>Aug 19</option>
+                                <option value="1">July 19</option>
+                                <option value="2">Jun 19</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                <br>
+                <center><button id="insert" class="btn btn-primary btn-lg" data-toggle="modal"
+                        data-target="#myModal">新增廠商</button>
+                </center>
+                <br>
+                <table id="vendorTable">
+                </table>
+                <br><br>
+                <div id="account"></div>
+                <div id="words"></div>
+                <div id="sID"></div>
+                <div id="resData2"></div>
+
+                <!--   彈出視窗  -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="myModalLabel">
+                                    新增廠商
+                                </h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                vID:<input id="newVID" type="text"><br>
+                                name:<input id=newName type="text"><br>
+                                address:<input id=newAddress type="text"><br>
+                                city:<input id=newCity type="text"><br>
+                                contact:<input id=newContact type="text"><br>
+                                phone:<input id="newPhone" type="text"><br>
+                                companyTax:<input id=newCompany type="text"><br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                                </button>
+                                <button type="button" id="new" class="btn btn-primary" onclick="newCreate()">
+                                    新增
+                                </button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    if (document.cookie) {
+        document.getElementById('logout').style.visibility = "visible";
+        var path = "http://127.0.0.1:3000/vendor";
+        var sJson = {
+            "uID": getCookie('uID')
+        }
+        console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    //document.getElementById('getCook').innerHTML = msg.data.username + " 您好";
+                    let vendorInfo =
+                        "<tr><td>vID</td><td>name</td><td>address</td><td>city</td><td>contact</td><td>phone</td><td>companyTax</td><td>updateUser</td></tr>"
+                    for (let i = 0; i < msg.data.length; i++) {
+                        vendorInfo += "<tr><td>" + msg.data[i].vID +
+                            "</td><td contenteditable=true>" + msg.data[i].name +
+                            "</td><td contenteditable=true>" + msg.data[i].address +
+                            "</td><td contenteditable=true>" + msg.data[i].city +
+                            "</td><td contenteditable=true>" + msg.data[i].contact +
+                            "</td><td contenteditable=true>" + msg.data[i].phone +
+                            "</td><td contenteditable=true>" + msg.data[i].companyTax +
+                            "</td><td>" + msg.data[i].updateUser +
+                            "</td><td><button id=edit class=editSelect >Edit</button></td><td><button id=del class=delSelect >Delete</button></td></tr>"
+                    }
+                    document.getElementById('vendorTable').innerHTML = vendorInfo
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    } else {
+        document.getElementById('getCook').innerHTML = '請先登入';
+        window.location.href = "/"
+        //console.log('false');
+    }
+    //create
+    function newCreate() {
+        var path = "http://127.0.0.1:3000/vendor/create";
+
+        var createJson = {
+            "vID": document.getElementById('newVID').value,
+            "name": document.getElementById('newName').value,
+            "address": document.getElementById('newAddress').value,
+            "city": document.getElementById('newCity').value,
+            "contact": document.getElementById('newContact').value,
+            "phone": document.getElementById('newPhone').value,
+            "companyTax": document.getElementById('newCompany').value
+        }
+        console.log(createJson)
+        $.ajax({
+            url: path,
+            data: createJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('create success')
+                    window.location.href = "/vendor";
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+
+    //edit
+    $("#vendorTable").on('click', '.editSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let vID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let name = currentRow.find("td:eq(1)").html();
+        let address = currentRow.find("td:eq(2)").html();
+        let city = currentRow.find("td:eq(3)").html();
+        let contact = currentRow.find("td:eq(4)").html();
+        let phone = currentRow.find("td:eq(5)").html();
+        let companyTax = currentRow.find("td:eq(6)").html();
+        let updateUser = currentRow.find("td:eq(7)").html();
+
+        var path = "http://127.0.0.1:3000/vendor/edit";
+        var editJson = {
+            "vID": vID,
+            "name": name,
+            "address": address,
+            "city": city,
+            "contact": contact,
+            "phone": phone,
+            "companyTax": companyTax,
+            "updateUser": updateUser,
+        }
+        console.log(editJson)
+        $.ajax({
+            url: path,
+            data: editJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('edit success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    //delete
+    $("#vendorTable").on('click', '.delSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+
+        let vID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let data = vID;
+        console.log(data);
+
+        var path = "http://127.0.0.1:3000/vendor/del";
+        var delJson = {
+            "vID": vID
+        }
+        console.log(delJson)
+        $.ajax({
+            url: path,
+            data: delJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('delete success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+</script>

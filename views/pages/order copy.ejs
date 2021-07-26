@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+
+</head>
+
+<body style="padding: 0cm;">
+
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <%- include ../parts/nav.ejs %>
+
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-7 align-self-center">
+                        <h2 class="page-title text-truncate text-dark font-weight-medium mb-1"><%= title %></h2>
+                        <div class="d-flex align-items-center">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+                                    <li class="breadcrumb-item text-muted active" aria-current="page">Library</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-center">
+                        <div class="customize-input float-right">
+                            <select
+                                class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
+                                <option selected>Aug 19</option>
+                                <option value="1">July 19</option>
+                                <option value="2">Jun 19</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+
+
+                <br>
+                <center><button id="insert" class="btn btn-primary btn-lg" data-toggle="modal"
+                        data-target="#myModal">新增訂單</button>
+                </center>
+                <br>
+                <table id="orderTable">
+                </table>
+                <br><br>
+                <div id="account"></div>
+                <div id="words"></div>
+                <div id="sID"></div>
+                <div id="resData2"></div>
+
+                <!--   彈出視窗  -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="myModalLabel">
+                                    新增訂單
+                                </h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                vID:<select id="newVID"></select><br>
+                                uID:<select id="newUID"></select><br>
+                                Price:<input id=newPrice type="text" onkeyup=newCalculate()><br>
+                                Amount:<input id=newAmount type="text" onkeyup=newCalculate()><br>
+                                Discount:<input id="newDiscount" type="text" onkeyup='newCalculate()'><br>
+                                Total:<input id=newTotal type="text" readonly><br>
+                                Date:<input id="newTime" type="date">
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                                </button>
+                                <button type="button" id="new" class="btn btn-primary" onclick="newCreate()">
+                                    新增
+                                </button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    if (document.cookie) {
+        let cookie = document.cookie.split('=')
+        //document.getElementById('getCook').innerHTML = cookie[1] + " 您好";
+        document.getElementById('logout').style.visibility = "visible";
+        var path = "http://127.0.0.1:3000/order";
+        var sJson = {
+            "sID": cookie[1]
+        }
+        //console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    //document.getElementById('getCook').innerHTML = msg.data.username + " 您好";
+                    let orderInfo =
+                        "<tr><td>orderID</td><td>venderID</td><td>userID</td><td>price</td><td>amount</td><td>discount(%off)</td>" +
+                        "<td>total</td><td>tradeTime</td><td></td><td></td></tr>"
+                    let vidOption, uidOption
+                    for (let i = 0; i < msg.data.length; i++) {
+                        //show table
+                        if (msg.data[i].tradeMonth < 10) {
+                            msg.data[i].tradeMonth = "0" + msg.data[i].tradeMonth
+                        }
+                        if (msg.data[i].tradeDay < 10) {
+                            msg.data[i].tradeDay = "0" + msg.data[i].tradeDay
+                        }
+                        let tradeTime = msg.data[i].tradeYear + "-" + msg.data[i].tradeMonth + "-" + msg
+                            .data[i].tradeDay
+                        orderInfo += "<tr id=" + msg.data[i].oID + "><td>" + msg.data[i].oID +
+                            "</td><td contenteditable=true>" + msg.data[i].vID +
+                            "</td><td contenteditable=true>" + msg.data[i].uID +
+                            "</td><td id='price" + i + "' contenteditable=true onkeyup='calculate(" + i +
+                            ")'>" +
+                            msg.data[i].price +
+                            "</td><td id='amount" + i + "' contenteditable=true onkeyup='calculate(" + i +
+                            ")'>" +
+                            msg.data[i].amount +
+                            "</td><td id='discount" + i + "' contenteditable=true onkeyup='calculate(" + i +
+                            ")'>" +
+                            msg.data[i].discount + "</td><td id='total" + i + "'>" +
+                            msg.data[i].total +
+                            "</td><td contenteditable=true><input id=time type='date' value=" + tradeTime +
+                            ">" +
+                            "</td><td><button id=edit class=editSelect >Edit</button></td><td><button id=del class=delSelect >Delete</button></td></tr>"
+                    }
+                    for (let i = 0; i < msg.viddata.length; i++) {
+                        //create option
+                        vidOption += "<option value='" + msg.viddata[i].name + "'>" + msg.viddata[i].name +
+                            "</option>"
+                    }
+                    for (let i = 0; i < msg.uiddata.length; i++) {
+                        //create option
+                        uidOption += "<option value='" + msg.uiddata[i].username + "'>" + msg.uiddata[i]
+                            .username +
+                            "</option>"
+                    }
+                    document.getElementById('orderTable').innerHTML = orderInfo
+                    document.getElementById('newVID').innerHTML = vidOption
+                    document.getElementById('newUID').innerHTML = uidOption
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    } else {
+        document.getElementById('getCook').innerHTML = '請先登入';
+        //window.location.href = "/"
+    }
+
+    //calculate
+    function calculate(i) {
+        let id = i
+        let price = document.getElementById('price' + i).innerHTML
+        let amount = document.getElementById('amount' + i).innerHTML
+        let discount = document.getElementById('discount' + i).innerHTML
+        let total = document.getElementById('total' + i)
+        let sum = price * amount * (100 - discount) * 0.01
+        total.innerHTML = sum
+        console.log(total)
+
+    }
+
+    function newCalculate() {
+        let sum = document.getElementById('newPrice').value * document.getElementById('newAmount').value * (100 -
+            document.getElementById('newDiscount').value) * 0.01
+        document.getElementById('newTotal').value = sum
+    }
+
+    //create
+    function newCreate() {
+        var path = "http://127.0.0.1:3000/order/create";
+
+        let tradeTime = document.getElementById('newTime').value
+        let tradeYear = tradeTime.split('-')[0]
+        let tradeMonth = tradeTime.split('-')[1]
+        let tradeDay = tradeTime.split('-')[2]
+
+        var createJson = {
+            "vID": document.getElementById('newVID').value,
+            "uID": document.getElementById('newUID').value,
+            "price": document.getElementById('newPrice').value,
+            "amount": document.getElementById('newAmount').value,
+            "discount": document.getElementById('newDiscount').value,
+            "total": document.getElementById('newTotal').value,
+            "tradeYear": tradeYear,
+            "tradeMonth": tradeMonth,
+            "tradeDay": tradeDay,
+            "createUser": getCookie('uID')
+        }
+        console.log(createJson)
+        $.ajax({
+            url: path,
+            data: createJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('create success')
+                    window.location.href = "/order"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+
+    //edit
+    $("#orderTable").on('click', '.editSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let oID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let vID = currentRow.find("td:eq(1)").html();
+        let uID = currentRow.find("td:eq(2)").html();
+        let price = currentRow.find("td:eq(3)").html();
+        let amount = currentRow.find("td:eq(4)").html();
+        let discount = currentRow.find("td:eq(5)").html();
+        let total = currentRow.find("td:eq(6)").html();
+        let tradeTime = currentRow.find("td:eq(7)").find('input').val();
+        let tradeYear = tradeTime.split('-')[0]
+        let tradeMonth = tradeTime.split('-')[1]
+        let tradeDay = tradeTime.split('-')[2]
+        let data = oID + "\n" + vID + "\n" + uID;
+
+        var path = "http://127.0.0.1:3000/order/edit";
+        var editJson = {
+            "oID": oID,
+            "vID": vID,
+            "uID": uID,
+            "price": price,
+            "amount": amount,
+            "discount": discount,
+            "total": total,
+            "tradeYear": tradeYear,
+            "tradeMonth": tradeMonth,
+            "tradeDay": tradeDay,
+            "updateUser": getCookie("uID")
+        }
+        console.log(editJson)
+        $.ajax({
+            url: path,
+            data: editJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('edit success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    //delete
+    $("#orderTable").on('click', '.delSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+
+        let oID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let data = oID;
+        console.log(data);
+
+        var path = "http://127.0.0.1:3000/order/del";
+        var delJson = {
+            "oID": oID
+        }
+        console.log(delJson)
+        $.ajax({
+            url: path,
+            data: delJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('delete success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+</script>

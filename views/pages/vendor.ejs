@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body style="padding: 0cm;">
+
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <%- include ../parts/nav.ejs %>
+
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-7 align-self-center">
+                        <h2 class="page-title text-truncate text-dark font-weight-medium mb-1"><%= title %></h2>
+                        <div class="d-flex align-items-center">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a href="/homepage" class="text-muted">Home</a></li>
+                                    <li class="breadcrumb-item text-muted active" aria-current="page">Vendor</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-center">
+                        
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="container-fluid">
+                
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">Vendors　<button id="insert" class="btn btn-outline-primary" data-toggle="modal"
+                                    data-target="#myModal">新增廠商</button></h4>
+
+                                <div class="table-responsive">
+                                    <table id="multi_col_order"
+                                        class="table table-striped table-bordered display no-wrap " style="width:100%">
+                                        <thead class="bg-danger text-white">
+                                            <tr>
+                                                <th>vID</th>
+                                                <th>廠商名</th>
+                                                <th>地址</th>
+                                                <th>城市</th>
+                                                <th>聯絡資料</th>
+                                                <th>電話</th>
+                                                <th>companyTax</th>
+                                                <th>updateUser</th>
+                                                <th></th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="vendor_table">
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+                
+                <br>
+                <br><br>
+                <div id="account"></div>
+                <div id="words"></div>
+                <div id="sID"></div>
+                <div id="resData2"></div>
+
+                <!--   彈出視窗  -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="myModalLabel">
+                                    新增廠商
+                                </h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                廠商名:<input id=newName type="text"><br>
+                                地址:<input id=newAddress type="text"><br>
+                                城市:<input id=newCity type="text"><br>
+                                聯絡資料:<input id=newContact type="text"><br>
+                                電話:<input id="newPhone" type="text"><br>
+                                companyTax:<input id=newCompany type="text" value="0"><br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                                </button>
+                                <button type="button" id="new" class="btn btn-primary" onclick="newCreate()">
+                                    新增
+                                </button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+                <!--   修改彈出視窗  -->
+                <div class="modal fade" id="reviseModal"" tabindex=" -1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="myModalLabel">
+                                    修改廠商
+                                </h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                vID:<input type="text" id="reVID" readonly><br>
+                                廠商名:<input type="text" id="reName"><br>
+                                地址:<input id=reAddress type="text"><br>
+                                城市:<input id=reCity type="text"><br>
+                                聯絡資料:<input id="reContact" type="text"><br>
+                                電話:<input id=rePhone type="text" ><br>
+                                companyTax:<input id="reCompanyTax" type="text">
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                                </button>
+                                <button type="button" id="new" class="btn btn-primary" onclick="edit()">
+                                    修改
+                                </button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="/javascripts/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+</body>
+
+</html>
+<script>
+    if (document.cookie) {
+        document.getElementById('logout').style.visibility = "visible";
+        var path = "/vendor";
+        var sJson = {
+            "uID": getCookie('uID')
+        }
+        console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    $('#multi_col_order').DataTable({
+                        ajax: {
+                            url: "/vendor",
+                            type: 'POST'
+                        },
+                        columns: [{
+                                data: function (row) {
+                                    return "<tr id=" + row.vID + "><td>" + row.vID +
+                                        "</td>"
+                                }
+                            },
+                            {
+                                data: "name"
+
+                            },
+                            {
+                                data: "address"
+                            },
+                            {
+                                data: "city"
+                            },
+                            {
+                                data: "contact"
+                            },
+                            {
+                                data: "phone"
+                            },
+                            {
+                                data: "companyTax"
+                                
+                            },{
+                                data: "updateUser"
+                                
+                            },
+                            {
+                                data: function () {
+                                    return "<button type=button id=edit data-toggle=modal data-target=#reviseModal class='btn waves-effect waves-light btn-rounded btn-outline-warning editSelect'>Edit</button>";
+                                }
+                            },
+                            {
+                                data: function () {
+                                    return "<button type=button class='btn waves-effect waves-light btn-rounded btn-outline-danger delSelect'>Delete</button>";
+                                }
+                            }
+                        ]
+                    });
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    } else {
+        document.getElementById('getCook').innerHTML = '請先登入';
+        window.location.href = "/"
+        //console.log('false');
+    }
+    //create
+    function newCreate() {
+        var path = "/vendor/create";
+
+        var createJson = {
+            "name": document.getElementById('newName').value,
+            "address": document.getElementById('newAddress').value,
+            "city": document.getElementById('newCity').value,
+            "contact": document.getElementById('newContact').value,
+            "phone": document.getElementById('newPhone').value,
+            "companyTax": document.getElementById('newCompany').value
+        }
+        console.log(createJson)
+        $.ajax({
+            url: path,
+            data: createJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('create success')
+                    window.location.href = "/vendor";
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+    
+    //show edit
+    $("#multi_col_order").on('click', '.editSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let vID = currentRow.find("td:eq(0)").html();
+        let name= currentRow.find("td:eq(1)").html();
+        let address = currentRow.find("td:eq(2)").html();
+        let city = currentRow.find("td:eq(3)").html();
+        let contact = currentRow.find("td:eq(4)").html();
+        let phone = currentRow.find("td:eq(5)").html();
+        let companyTax = currentRow.find("td:eq(6)").html();
+
+        document.getElementById('reName').value = name
+        document.getElementById('reAddress').value = address
+        document.getElementById('reCity').value = city
+        document.getElementById('reContact').value = contact
+        document.getElementById('rePhone').value = phone
+        document.getElementById('reVID').value = vID
+        document.getElementById('reCompanyTax').value = companyTax
+
+    });
+
+    //edit
+    function edit() {
+        let cookie = document.cookie.split('=')
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let vID = document.getElementById('reVID').value; // get current row 1st table cell TD value
+        let name = document.getElementById('reName').value;
+        let address = document.getElementById('reAddress').value;
+        let city = document.getElementById('reCity').value;
+        let contact = document.getElementById('reContact').value;
+        let phone = document.getElementById('rePhone').value;
+        let companyTax = document.getElementById('reCompanyTax').value;
+        let updateUser = cookie[1];
+
+        var path = "/vendor/edit";
+        var editJson = {
+            "vID": vID,
+            "name": name,
+            "address": address,
+            "city": city,
+            "contact": contact,
+            "phone": phone,
+            "companyTax": companyTax,
+            "updateUser": updateUser,
+        }
+        console.log(editJson)
+        $.ajax({
+            url: path,
+            data: editJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('edit success')
+                    window.location.href = "/vendor"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+    //delete
+    $("#multi_col_order").on('click', '.delSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+
+        let vID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let data = vID;
+        console.log(data);
+
+        var path = "/vendor/del";
+        var delJson = {
+            "vID": vID
+        }
+        console.log(delJson)
+        $.ajax({
+            url: path,
+            data: delJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    window.location.href = "/vendor"
+                    alert('delete success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+</script>

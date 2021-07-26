@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+
+<body>
+  <h1><%= title %></h1>
+  <p>Welcome to <%= title %></p>
+  <button onclick="location.href='/signup'">新增帳號</button>
+  <br>
+  <form name="sentToServer" id="sentToServer" method="post">
+    <br>
+    Account:<br>
+    <input type="text" name="account" value="">
+    <br>
+    Password:<br>
+    <input type="text" name="password" value="">
+    <br><br>
+    <input type="submit" value="Submit" onclick="Submit()">
+  </form>
+  <img src="/123.png"/>
+  <div id=resData2></div>
+</body>
+
+</html>
+<script>
+  function Submit() {
+    var path = "http://127.0.0.1:3000/login";
+    var sJson = $('#sentToServer').serialize();
+    console.log(sJson)
+    $.ajax({
+      url: path,
+      data: sJson,
+      type: "POST",
+      dataType: 'json',
+      success: function (msg) {
+        console.log(msg);
+        if (msg.data.SessionID) {
+          //document.cookie = "SessionID="+msg.data.SessionID;
+          SetCookie('sID', msg.data.SessionID);
+          SetCookie('uID',msg.data.u_ID);
+          //$("#resData2").text(msg.data.msg);
+          window.location.href = "/homepage";
+        } else {
+          //$("#resData2").text(msg.data.SessionID);
+          console.log(msg);
+          window.location.href = "/users";
+        }
+      },
+      err: function (msg) {
+        console.log("err");
+        console.log(msg);
+        $("#resData2").text(msg.resData);
+      }
+    });
+  }
+  function SetCookie(name, value) {
+    var Days = 30;
+    var exp = new Date();
+    exp.setTime(exp.getTime() + Days * 24 * 60 * 60 * 1000);
+    document.cookie = name + "=" + escape(value) + ";expires=" + exp.toGMTString();
+  }
+</script>

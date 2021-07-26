@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body style="padding: 0cm;">
+
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <%- include ../parts/nav.ejs %>
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-7 align-self-center">
+                        <h2 class="page-title text-truncate text-dark font-weight-medium mb-1"><%= title %></h2>
+                        <div class="d-flex align-items-center">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a href="index.html" class="text-muted">Home</a></li>
+                                    <li class="breadcrumb-item text-muted active" aria-current="page">Library</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-center">
+                        <div class="customize-input float-right">
+                            <select
+                                class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
+                                <option selected>Aug 19</option>
+                                <option value="1">July 19</option>
+                                <option value="2">Jun 19</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            <div class="container-fluid">
+                <br>
+                <center><button id="insert" class="btn btn-primary btn-lg" data-toggle="modal"
+                        data-target="#myModal">新增產品</button>
+                </center>
+                <br>
+                <table id="productTable">
+                </table>
+                <br><br>
+                <div id="account"></div>
+                <div id="words"></div>
+                <div id="sID"></div>
+                <div id="resData2"></div>
+
+                <!--   彈出視窗  -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h2 class="modal-title" id="myModalLabel">
+                                    新增產品
+                                </h2>
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                    &times;
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                pID:<input id="newPID" type="text"><br>
+                                store:<input id="newStore" type="text"><br>
+                                safeStore:<input id="newSafeStore" type="text"><br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                                </button>
+                                <button type="button" id="new" class="btn btn-primary" onclick="newCreate()">
+                                    新增
+                                </button>
+                            </div>
+                        </div><!-- /.modal-content -->
+                    </div><!-- /.modal -->
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    if (document.cookie) {
+        let cookie = document.cookie.split('=')
+        //document.getElementById('getCook').innerHTML = cookie[1] + " 您好";
+        document.getElementById('logout').style.visibility = "visible";
+        //console.log('true');
+        var path = "http://127.0.0.1:3000/product";
+        var sJson = {
+            "sID": cookie[1]
+        }
+        console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    //document.getElementById('getCook').innerHTML = msg.data.username + " 您好";
+                    //document.getElementById('productTable').innerHTML = msg
+                    let productInfo =
+                        "<tr><td>pID</td><td>store</td><td>safeStore</td><td>updateUser</td><td></td><td></td></tr>"
+                    for (let i = 0; i < msg.data.length; i++) {
+                        productInfo += "<tr><td>" + msg.data[i].pID +
+                            "</td><td  contenteditable=true>" + msg.data[i].store +
+                            "</td><td  contenteditable=true>" + msg.data[i].safeStore +
+                            "</td><td>" + msg.data[i].updateUser +
+                            "</td><td><button id=edit class=editSelect >Edit</button></td>" +
+                            "<td><button id=del class=delSelect >Delete</button></td></tr>"
+                    }
+                    document.getElementById('productTable').innerHTML = productInfo
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    } else {
+        document.getElementById('getCook').innerHTML = '請先登入';
+        //window.location.href = "/"
+        //console.log('false');
+    }
+    //create
+    function newCreate() {
+        var path = "http://127.0.0.1:3000/product/create";
+
+        var createJson = {
+            "pID": document.getElementById('newPID').value,
+            "store": document.getElementById('newStore').value,
+            "safeStore": document.getElementById('newSafeStore').value
+        }
+        console.log(createJson)
+        $.ajax({
+            url: path,
+            data: createJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('create success')
+                    window.location.href = "/product";
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+
+    //edit
+    $("#productTable").on('click', '.editSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let pID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let store = currentRow.find("td:eq(1)").html();
+        let safeStore = currentRow.find("td:eq(2)").html();
+
+        var path = "http://127.0.0.1:3000/product/edit";
+        var editJson = {
+            "pID": pID,
+            "store": store,
+            "safeStore": safeStore
+        }
+        console.log(editJson)
+        $.ajax({
+            url: path,
+            data: editJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('edit success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    //delete
+    $("#productTable").on('click', '.delSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+
+        let pID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let data = pID;
+        console.log(data);
+
+        var path = "http://127.0.0.1:3000/product/del";
+        var delJson = {
+            "pID": pID
+        }
+        console.log(delJson)
+        $.ajax({
+            url: path,
+            data: delJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('delete success')
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+</script>

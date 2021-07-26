@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>
+        修改個人資料，
+        <%= s_ID %>
+    </title>
+</head>
+
+<body style="padding: 0cm;">
+
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <%- include ../parts/nav.ejs %>
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-7 align-self-center">
+                        <h2 class="page-title text-truncate text-dark font-weight-medium mb-1">Profile</h2>
+                        <div class="d-flex align-items-center">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a href="" class="text-muted">Extra</a></li>
+                                    <li class="breadcrumb-item text-muted active" aria-current="page">Profile</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-center">
+
+                    </div>
+                </div>
+                <div class="container-fluid">
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-6 ">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Revise Personal</h4>
+                                    <form class="mt-3" id="sentToServer">
+
+                                        Username:
+                                        <input type="hidden" name="uID" value=<%=uID %>>
+
+                                        <input id="username" type="text" name="username" class="form-control"
+                                            value=<%=username %>><br>
+
+                                        Gender: <br>
+                                        <div id="checkGEN" style='display: none;'><%= gender %></div>
+                                        女生
+                                        <input id="gen1" type="radio" name="gender" value="0" placeholder="女生">
+                                        男生
+                                        <input id="gen2" type="radio" name="gender" value="1" placeholder="男生">
+                                        <br><br>Birthday:
+                                        <input id="birth" class="form-control" type="date" name="birthday"
+                                            value=<%=birthday %>>
+                                        <br>
+                                        Password:<br>
+                                        <input id="pass1" name="pass1" type="password"> <br>
+                                        Password Twice:<br>
+                                        <input id="pass2" name="pass2" type="password" onkeyup='checkPass()'>
+                                        <div id=tip></div>
+                                        <br>
+                                        <input id="submit" type="button" value="送出" onClick="Submit()">
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 ">
+
+                        </div>
+                    </div>
+                    <div id="resData2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    let cg = document.getElementById('checkGEN').innerHTML
+    if (cg == '0') {
+        document.getElementById('gen1').checked = true
+    }
+    else{
+        document.getElementById('gen1').checked = false
+    }
+    if (cg == '1') {
+        document.getElementById('gen2').checked = true
+    }
+    else{
+        document.getElementById('gen2').checked = false
+    }
+
+    //確認密碼相同
+    function checkPass() {
+        var pass1 = document.getElementById('pass1');
+        var pass2 = document.getElementById('pass2');
+        console.log(pass1.value, pass2.value);
+        if (pass1.value !== pass2.value) {
+            console.log('密碼不相同');
+            document.getElementById('tip').innerHTML = '密碼不相同';
+        } else {
+            console.log('密碼相同');
+            document.getElementById('tip').innerHTML = '密碼相同';
+        }
+    }
+    //改個資
+
+    function Submit() {
+        var path = "/profile";
+        var sJson = $('#sentToServer').serialize();
+        console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                $("#resData2").text(msg.msg);
+                if (msg.code === 2001) {
+                    window.location.href = "/profile";
+                } else {
+                    //window.location.href = "/update2";
+                    $("#resData2").text(msg.msg);
+                    console.log(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                console.log(msg);
+                $("#resData2").text(msg.msg);
+            }
+        });
+    }
+
+    //改密碼
+
+    function SubmitPassword() {
+        var path = "/profile/edit";
+        var sJson = $('#revisePasswordForm').serialize();
+        console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg);
+                $("#resData2").text(msg.msg);
+                if (msg.code === 2001) {
+                    window.location.href = "/profile";
+                } else {
+                    //window.location.href = "/update2";
+                    $("#resData2").text(msg.msg);
+                    console.log(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                console.log(msg);
+                $("#resData2").text(msg.msg);
+            }
+        });
+    }
+</script>

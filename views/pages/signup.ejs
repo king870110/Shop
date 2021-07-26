@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+  </head>
+  <body>
+      <h1>加入會員</h1><h1><%= title %></h1>
+    <form id="sentToServer">
+        <br>
+        account:<br>
+        <input type="text" name="account">
+        <br>
+        password:<br>
+        <input type="text" name="password">
+        <br><br>
+        <input type="button" value="Submit" onClick="Submit()" >
+    </form>
+    <div id="resData2" ></div>
+  </body>
+</html>
+<script>
+
+  function Submit(){
+      var path="http://127.0.0.1:3000/signup";
+      var sJson = $('#sentToServer').serialize();
+      console.log(sJson)
+      $.ajax({
+          url: path,
+          data: sJson,
+          type:"POST",
+          dataType:'json',
+          success: function(msg){
+                console.log(msg);
+                $("#resData2").text(msg.msg);
+                if(msg.code!==2001){
+                  window.location.href = "/signup";
+                }
+                else{
+                  window.location.href = "/login";
+                }
+            },
+            err : function(msg){
+              console.log("err");
+              $("#resData2").text(msg.resData);
+            }
+      });
+  }
+</script>

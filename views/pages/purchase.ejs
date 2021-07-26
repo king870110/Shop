@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+
+</head>
+
+<body style="padding: 0cm;">
+
+    <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+        data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+        <%- include ../parts/nav.ejs %>
+
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb">
+                <div class="row">
+                    <div class="col-7 align-self-center">
+                        <h2 class="page-title text-truncate text-dark font-weight-medium mb-1"><%= title %></h2>
+                        <div class="d-flex align-items-center">
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb m-0 p-0">
+                                    <li class="breadcrumb-item"><a href="/homepage" class="text-muted">Home</a></li>
+                                    <li class="breadcrumb-item text-muted active" aria-current="page">Purchase</li>
+                                </ol>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-5 align-self-center">
+                        
+                    </div>
+                    
+                </div>
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+<br>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">PurchasesNo　<button id="insertNo" class="btn btn-outline-primary" data-toggle="modal"
+                                data-target="#myModal2">新增N次進貨單</button></h4>
+
+                            <div class="table-responsive">
+                                <table id="multi_col_purchaseno"
+                                    class="table table-striped table-bordered display no-wrap " style="width:100%">
+                                    <thead class="bg-danger text-white">
+                                        <tr>
+                                            <th>noID</th>
+                                            <th>集運日</th>
+                                            <th>發貨日</th>
+                                            <th>貨到日</th>
+                                            <th>運費</th>
+                                            <th>總計</th>
+                                            <th>實付</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="purchaseno_table">
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <br>
+            <!-- multi-column ordering -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            
+                            <h4 class="card-title">Purchases　<button id="insert" class="btn btn-outline-primary" data-toggle="modal"
+                                data-target="#myModal">新增採購單</button>
+                        </h4>
+
+                            <div class="table-responsive">
+                                <table id="multi_col_purchase"
+                                    class="table table-striped table-bordered display no-wrap " style="width:100%">
+                                    <thead class="bg-danger text-white">
+                                        <tr>
+                                            <th>purchaseID</th>
+                                            <th>noID</th>
+                                            <th>venderID</th>
+                                            <th>pID</th>
+                                            <th>價格</th>
+                                            <th>數量</th>
+                                            <th>總計</th>
+                                            <th>下單日</th>
+                                            <th>出貨日</th>
+                                            <th>到倉日</th>
+                                            <th></th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="purchase_table">
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <br><br>
+            <div id="account"></div>
+            <div id="words"></div>
+            <div id="sID"></div>
+            <div id="resData2"></div>
+
+            <!--   新增訂單彈出視窗  -->
+            <div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="myModalLabel2">
+                                新增N次進貨單
+                            </h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="newNOID2"></div><br>
+                            集運日:<input id="newStop4" type="date"><br>
+                            發貨日:<input id="newStop5" type="date"><br>
+                            貨到日:<input id="newStop6" type="date"><br>
+                            運費:<input id=newDCost type="text"><br>
+                            總計:<input id="newTotalCost" type="text"><br>
+                            實付:<input id="newActCost" type="text">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                            </button>
+                            <button type="button" id="newNO" class="btn btn-primary" onclick="newCreateNO()">
+                                新增
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+
+            <!--   新增彈出視窗  -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="myModalLabel">
+                                新增採購單
+                            </h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            noID:<select id="newNOID"></select><br>
+                            vID:<select id="newVID"></select><br>
+                            pID:<select id="newPID"></select><br>
+                            價格:<input id=newPrice type="text"
+                                onkeyup="newCalculate('newPrice','newAmount','newTotal')"><br>
+                            數量:<input id=newAmount type="text"
+                                onkeyup="newCalculate('newPrice','newAmount','newTotal')"><br>
+                            總計:<input id=newTotal type="text" readonly><br>
+                            下單日:<input id="newStop1" type="date"><br>
+                            出貨日:<input id="newStop2" type="date"><br>
+                            到倉日:<input id="newStop3" type="date">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                            </button>
+                            <button type="button" id="new" class="btn btn-primary" onclick="newCreate()">
+                                新增
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--   修改N次進貨彈出視窗  -->
+            <div class="modal fade" id="reviseModal2"" tabindex=" -1" role="dialog" aria-labelledby="myModalLabel2"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="myModalLabel2">
+                                修改N次進貨單
+                            </h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="reNOID2"></div>
+                            集運日:<input id="reStop4" type="date"><br>
+                            發貨日:<input id="reStop5" type="date"><br>
+                            到貨日:<input id="reStop6" type="date"><br>
+                            運費:<input id="reDCost" type="text"><br>
+                            總計:<input id="reTotalCost" type="text"><br>
+                            實付:<input id="reActCost" type="text">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                            </button>
+                            <button type="button" id="new2" class="btn btn-primary" onclick="edit2()">
+                                修改
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+
+            <!--   修改彈出視窗  -->
+            <div class="modal fade" id="reviseModal"" tabindex=" -1" role="dialog" aria-labelledby="myModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title" id="myModalLabel">
+                                修改採購單
+                            </h2>
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="rePCID"></div>
+                            noID:<select id="reNOID"></select><br>
+                            vID:<select id="reVID"></select><br>
+                            pID:<select id="rePID"></select><br>
+                            價格:<input id=rePrice type="text"
+                                onkeyup="newCalculate('rePrice','reAmount','reTotal')"><br>
+                            數量:<input id=reAmount type="text"
+                                onkeyup="newCalculate('rePrice','reAmount','reTotal')"><br>
+                            總計:<input id=reTotal type="text" readonly><br>
+                            下單日:<input id="reStop1" type="date"><br>
+                            出貨日:<input id="reStop2" type="date"><br>
+                            到倉日:<input id="reStop3" type="date">
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">關閉
+                            </button>
+                            <button type="button" id="new" class="btn btn-primary" onclick="edit()">
+                                修改
+                            </button>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
+    </div>
+    <script src="/javascripts/extra-libs/datatables.net/js/jquery.dataTables.min.js"></script>
+</body>
+
+</html>
+<script>
+    if (document.cookie) {
+        let cookie = document.cookie.split('=')
+        //document.getElementById('getCook').innerHTML = cookie[1] + " 您好";
+        document.getElementById('logout').style.visibility = "visible";
+        var path = "/purchase";
+        var sJson = {
+            "sID": cookie[1]
+        }
+        //console.log(sJson)
+        $.ajax({
+            url: path,
+            data: sJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                console.log(msg)
+                if (msg.code == 2001) {
+                    let noInfo = ''
+                    for (let i = 0; i < msg.nodata.length; i++) {
+                        
+                        noInfo += "<tr id=" + msg.nodata[i].noID + "><td>" + msg.nodata[i].noID +
+                            "</td><td>" + timeCal(msg.nodata[i].stop4) +
+                            "</td><td contenteditable=true>" + timeCal(msg.nodata[i].stop5) +
+                            "</td><td contenteditable=true>" + timeCal(msg.nodata[i].stop6) +
+                            "</td><td>" + msg.nodata[i].deliveryCost +
+                            "</td><td>" + Math.round(msg.totaldata[i].t*100)/100 +
+                            "</td><td>" + msg.nodata[i].actCost +
+                            "</td><td><button type=button id=edit2 data-toggle=modal data-target=#reviseModal2 class='btn waves-effect waves-light btn-rounded btn-outline-warning editSelect'>Edit</button></td>"
+                            +"<td><button type=button class='btn waves-effect waves-light btn-rounded btn-outline-danger delSelect'>Delete</button></td></tr>"
+                    }
+
+                    document.getElementById('purchaseno_table').innerHTML = noInfo;
+
+                    $('#multi_col_purchase').DataTable({
+                        ajax: {
+                            url: "/purchase",
+                            type: 'POST'
+                        },
+                        columns: [{
+                                data: function (row) {
+                                    return "<tr id=" + row.pcID + "><td>" + row
+                                        .pcID +
+                                        "</td>"
+                                }
+                            },
+                            {
+                                data: "noID"
+                            },
+                            {
+                                data: "vID"
+                            },
+                            {
+                                data: "pID"
+                            },
+                            {
+                                data: "price"
+                            },
+                            {
+                                data: "amount"
+                            },
+                            {
+                                data: "total"
+                            },
+                            {
+                                data: function (row) {
+                                    return timeCal(row.stop1)
+                                }
+                            },
+                            {
+                                data: function (row) {
+                                    return timeCal(row.stop2)
+                                }
+                            },
+                            {
+                                data: function (row) {
+                                    return timeCal(row.stop3)
+                                }
+                            },
+
+                            {
+                                data: function () {
+                                    return "<button type=button id=edit data-toggle=modal data-target=#reviseModal class='btn waves-effect waves-light btn-rounded btn-outline-warning editSelect'>Edit</button>";
+                                }
+                            },
+                            {
+                                data: function () {
+                                    return "<button type=button class='btn waves-effect waves-light btn-rounded btn-outline-danger delSelect'>Delete</button>";
+                                }
+                            }
+                        ]
+                    });
+                    //document.getElementById('getCook').innerHTML = msg.data.username + " 您好";
+                    let purchaseInfo =
+                        "<tr><td>purchaseID</td><td>noID</td><td>venderID</td><td>userID</td><td>price</td><td>amount</td>" +
+                        "<td>total</td><td>stop1</td><td>stop2</td><td>stop3</td><td></td><td></td></tr>"
+                    let vidOption, pidOption, noidOption
+                    for (let i = 0; i < msg.data.length; i++) {
+                        //show table
+                        //console.log(new Date(msg.data[i].stop1))
+                        purchaseInfo += "<tr id=" + msg.data[i].pcID + "><td>" + msg.data[i].pcID +
+                            "</td><td contenteditable=true>" + msg.data[i].noID +
+                            "</td><td contenteditable=true>" + msg.data[i].vID +
+                            "</td><td contenteditable=true>" + msg.data[i].noID +
+                            "</td><td contenteditable=true>" + msg.data[i].pID +
+                            "</td><td id='price" + i + "' contenteditable=true onkeyup='calculate(" + i +
+                            ")'>" +
+                            msg.data[i].price +
+                            "</td><td id='amount" + i + "' contenteditable=true onkeyup='calculate(" + i +
+                            ")'>" +
+                            msg.data[i].amount +
+                            "</td><td id='total" + i + "'>" +
+                            msg.data[i].total +
+                            "</td><td id=stop1 contenteditable=true>" + new Date(msg.data[i]
+                                .stop1) +
+                            ">" +
+                            "</td><td id=stop2 contenteditable=true>" + new Date(msg.data[i]
+                                .stop2) +
+                            ">" +
+                            "</td><td id=stop3 contenteditable=true>" + new Date(msg.data[i]
+                                .stop3) +
+                            ">" +
+                            "</td><td><button id=edit class=editSelect >Edit</button></td><td><button id=del class=delSelect >Delete</button></td></tr>"
+                    }
+
+                    for (let i = 0; i < msg.nodata.length; i++) {
+                        //create option
+
+                        noidOption += "<option value='" + msg.nodata[i].noID + "'>" + msg.nodata[i].noID +
+                            "</option>"
+
+                    }
+                    for (let i = 0; i < msg.viddata.length; i++) {
+                        //create option
+                        vidOption += "<option value='" + msg.viddata[i].name + "'>" + msg.viddata[i].name +
+                            "</option>"
+                    }
+                    for (let i = 0; i < msg.piddata.length; i++) {
+                        //create option
+                        pidOption += "<option value='" + msg.piddata[i].pName + "'>" + msg.piddata[i]
+                            .pName +
+                            "</option>"
+                    }
+                    document.getElementById('newNOID').innerHTML = noidOption
+                    document.getElementById('newVID').innerHTML = vidOption
+                    document.getElementById('newPID').innerHTML = pidOption
+                    document.getElementById('reNOID').innerHTML = noidOption
+                    document.getElementById('reVID').innerHTML = vidOption
+                    document.getElementById('rePID').innerHTML = pidOption
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    } else {
+        document.getElementById('getCook').innerHTML = '請先登入';
+        //window.location.href = "/"
+    }
+
+
+
+    //calculate
+    function calculate(i) {
+        let id = i
+        let price = document.getElementById('price' + i).value
+        let amount = document.getElementById('amount' + i).innerHTML
+        let total = document.getElementById('total' + i)
+        let sum = price * amount
+        total.innerHTML = sum
+        console.log(total)
+
+    }
+
+    function newCalculate(a, b, d) {
+        let sum = document.getElementById(a).value * document.getElementById(b).value
+        document.getElementById(d).value = sum
+    }
+
+    //createPCNO
+    function newCreateNO() {
+        var path = "/purchase/createNO";
+
+        var createJson = {
+            "noID": document.getElementById('newNOID2').value,
+            "stop4": document.getElementById('newStop4').value,
+            "stop5": document.getElementById('newStop5').value,
+            "stop6": document.getElementById('newStop6').value,
+            "deliveryCost": document.getElementById('newDCost').value,
+            "totalCost": document.getElementById('newTotalCost').value,
+            "actCost": document.getElementById('newActCost').value,
+            "createUser": getCookie('uID')
+        }
+        console.log(createJson)
+        $.ajax({
+            url: path,
+            data: createJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                //console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('create success')
+                    window.location.href = "/purchase"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+    //create
+    function newCreate() {
+        var path = "/purchase/create";
+
+        var createJson = {
+            "noID": document.getElementById('newNOID').value,
+            "vID": document.getElementById('newVID').value,
+            "pID": document.getElementById('newPID').value,
+            "price": document.getElementById('newPrice').value,
+            "amount": document.getElementById('newAmount').value,
+            "total": document.getElementById('newTotal').value,
+            "stop1": document.getElementById('newStop1').value.substr(0, 10),
+            "stop2": document.getElementById('newStop2').value,
+            "stop3": document.getElementById('newStop3').value,
+            "createUser": getCookie('uID')
+        }
+        console.log(createJson)
+        $.ajax({
+            url: path,
+            data: createJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                //console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('create success')
+                    window.location.href = "/purchase"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+    //show edit
+    $("#multi_col_purchaseno").on('click', '.editSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let noID = currentRow.find("td:eq(0)").html();
+        let stop4 = currentRow.find("td:eq(1)").html();
+        let stop5 = currentRow.find("td:eq(2)").html();
+        let stop6 = currentRow.find("td:eq(3)").html();
+        let dCost = currentRow.find("td:eq(4)").html();
+        let totalCost = currentRow.find("td:eq(5)").html();
+        let actCost = currentRow.find("td:eq(6)").html();
+
+        document.getElementById('reNOID').value = noID
+        document.getElementById('reStop4').value = stop4.substr(0, 10)
+        document.getElementById('reStop5').value = stop5.substr(0, 10)
+        document.getElementById('reStop6').value = stop6.substr(0, 10)
+        document.getElementById('reDCost').value = dCost
+        document.getElementById('reTotalCost').value = totalCost
+        document.getElementById('reActCost').value = actCost
+
+    });
+
+
+    //show edit
+    $("#multi_col_purchase").on('click', '.editSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+        let pcID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let noID = currentRow.find("td:eq(1)").html();
+        let vID = currentRow.find("td:eq(2)").html();
+        let pID = currentRow.find("td:eq(3)").html();
+        let price = currentRow.find("td:eq(4)").html();
+        let amount = currentRow.find("td:eq(5)").html();
+        let total = currentRow.find("td:eq(6)").html();
+        let stop1 = currentRow.find("td:eq(7)").html();
+        let stop2 = currentRow.find("td:eq(8)").html();
+        let stop3 = currentRow.find("td:eq(9)").html();
+
+        document.getElementById('rePCID').value = pcID
+        document.getElementById('reNOID').value = noID
+        document.getElementById('reVID').value = vID
+        document.getElementById('rePID').value = pID
+        document.getElementById('rePrice').value = price
+        document.getElementById('reAmount').value = amount
+        document.getElementById('reTotal').value = total
+        document.getElementById('reStop1').value = stop1.substr(0, 10)
+        document.getElementById('reStop2').value = stop2.substr(0, 10)
+        document.getElementById('reStop3').value = stop3.substr(0, 10)
+
+    });
+
+    //edit2
+    function edit2() {
+        var path = "/purchase/edit2";
+
+        var editJson = {
+            "noID": document.getElementById('reNOID').value,
+            "stop4": document.getElementById('reStop4').value,
+            "stop5": document.getElementById('reStop5').value,
+            "stop6": document.getElementById('reStop6').value,
+            "dCost": document.getElementById('reDCost').value,
+            "totalCost": document.getElementById('reTotalCost').value,
+            "actCost": document.getElementById('reActCost').value,
+            "createUser": getCookie('uID')
+        }
+        console.log(editJson)
+        $.ajax({
+            url: path,
+            data: editJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                //console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('edit success')
+                    window.location.href = "/purchase"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+    //edit
+    function edit() {
+        var path = "/purchase/edit";
+
+        var editJson = {
+            "pcID": document.getElementById('rePCID').value,
+            "noID": document.getElementById('reNOID').value,
+            "vID": document.getElementById('reVID').value,
+            "pID": document.getElementById('rePID').value,
+            "price": document.getElementById('rePrice').value,
+            "amount": document.getElementById('reAmount').value,
+            "total": document.getElementById('reTotal').value,
+            "stop1": document.getElementById('reStop1').value,
+            "stop2": document.getElementById('reStop2').value,
+            "stop3": document.getElementById('reStop3').value,
+            "createUser": getCookie('uID')
+        }
+        console.log(editJson)
+        $.ajax({
+            url: path,
+            data: editJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                //console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('edit success')
+                    window.location.href = "/purchase"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    }
+
+    //delete
+    $("#multi_col_purchaseno").on('click', '.delSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+
+        let noID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let data = noID;
+        console.log(data);
+
+        var path = "/purchase/del2";
+        var delJson = {
+            "noID": noID
+        }
+        console.log(delJson)
+        $.ajax({
+            url: path,
+            data: delJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                //console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('delete success')
+                    window.location.href = "/purchase"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    //delete
+    $("#multi_col_purchase").on('click', '.delSelect', function () {
+        // get the current row
+        let currentRow = $(this).closest("tr");
+
+        let pcID = currentRow.find("td:eq(0)").html(); // get current row 1st table cell TD value
+        let data = pcID;
+        console.log(data);
+
+        var path = "/purchase/del";
+        var delJson = {
+            "pcID": pcID
+        }
+        console.log(delJson)
+        $.ajax({
+            url: path,
+            data: delJson,
+            type: "POST",
+            dataType: 'json',
+            success: function (msg) {
+                //console.log(msg);
+                //$("#resData2").text(msg.msg);
+                if (msg.code == 2001) {
+                    alert('delete success')
+                    window.location.href = "/purchase"
+                } else {
+                    //document.getElementById('getCook').innerHTML = " 您好";
+                    $("#resData2").text(msg);
+                }
+            },
+            err: function (msg) {
+                console.log("err");
+                $("#resData2").text(msg.resData);
+            }
+        });
+    });
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    function timeCal(a) {
+        var time = new Date(a),
+            month = '' + (time.getMonth() + 1),
+            day = '' + time.getDate(),
+            year = time.getFullYear();
+
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('-');
+        
+    }
+</script>
